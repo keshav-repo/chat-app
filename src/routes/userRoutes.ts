@@ -1,9 +1,9 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
+import UserController from "../controller/userController";
 
-const router: Router = Router();
+const router: Router = Router(),
+  userController = new UserController();
 
-router.get("/users", function (req: Request, res: Response): void {
-  res.json({ name: "user-1" });
-});
+router.get("/users", userController.getUser);
 
 export default router;
