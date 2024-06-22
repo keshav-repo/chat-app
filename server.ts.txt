@@ -1,0 +1,63 @@
+import express from "express";
+import http from "http";
+import WebSocket, { Server } from "ws";
+
+// Create an Express application
+const app = express();
+const server = http.createServer(app);
+const wss = new Server({ server });
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// In-memory storage for messages
+let messages: string[] = [];
+
+// REST endpoint to get all messages
+app.get("/messages", (req, res) => {
+  res.json(messages);
+});
+
+// REST endpoint to post a new message
+app.post("/messages", (req, res) => {
+  const message: string = req.body.message;
+  if (message) {
+    messages.push(message);
+    // Broadcast the new message to all WebSocket clients
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+    res.status(201).json({ message: "Message sent" });
+  } else {
+    res.status(400).json({ error: "Message is required" });
+  }
+});
+
+// WebSocket connection
+wss.on("connection", (ws: WebSocket) => {
+  console.log("A new client connected.");
+
+  ws.on("message", (message: string) => {
+    console.log(`Received message: ${message}`);
+    messages.push(message);
+
+    // Broadcast to all clients
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+  });
+
+  ws.on("close", () => {
+    console.log("Client disconnected.");
+  });
+});
+
+// Start the server
+const PORT = 8080;
+server.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
