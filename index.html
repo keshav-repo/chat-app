@@ -30,7 +30,9 @@
     <button id="send">Send</button>
 
     <script>
-      const socket = new WebSocket("ws://localhost:8000");
+      const token =
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJLZXNoYXYiLCJpYXQiOjE3MTg5ODU2MDgsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJleHAiOjE3MTg5ODkyMDh9.dlT-RZcqAXjtgtGVGzX6MiHThR3Ziwkv43a99O72VP4";
+      const socket = new WebSocket(`ws://localhost:8000?token=${token}`);
 
       socket.addEventListener("open", (event) => {
         console.log("Connected to the server.");
