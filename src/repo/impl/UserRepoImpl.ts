@@ -43,11 +43,7 @@ class UserRepositoryImpl implements UserRepository {
       INSERT INTO users (userid, username, password)
       VALUES (?, ?, ?)
     `;
-    const params = [
-      user.userId,
-      user.username,
-      await bcrypt.hash(user.password, 10),
-    ];
+    const params = [user.userId, user.username, user.password];
     try {
       await this.client.execute(query, params, { prepare: true });
       console.log("User saved successfully");
