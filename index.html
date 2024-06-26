@@ -31,7 +31,7 @@
 
     <script>
       const token =
-        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJLZXNoYXYiLCJpYXQiOjE3MTg5ODU2MDgsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJleHAiOjE3MTg5ODkyMDh9.dlT-RZcqAXjtgtGVGzX6MiHThR3Ziwkv43a99O72VP4";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hZGhhdiIsImlhdCI6MTcxOTM4NTkwNSwiZXhwIjoxNzE5Mzg5NTA1fQ.-fOw2PgRBud9snhMAO4pk3RvT9J6yEy44MmRnTMX6EQ";
       const socket = new WebSocket(`ws://localhost:8000?token=${token}`);
 
       socket.addEventListener("open", (event) => {

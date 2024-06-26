@@ -1,6 +1,8 @@
 import { IncomingMessage } from "http";
 import WebSocket from "ws";
 import url from "url";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { customJwtPayload } from "./model/customJwtPayload";
 
 interface ClientInfo {
   socket: WebSocket;
@@ -17,23 +19,23 @@ const initializeWebSocketServer = (port: number) => {
     const token = query.token as string;
 
     console.log(`token is ${token}`);
+    const secretKey = "some-key";
 
-    const username = "Keshav";
+    let username = "";
+    try {
+      console.log("verifying token");
+      const payload = jwt.verify(token, secretKey) as customJwtPayload;
+      console.log("payload is");
+      console.log(payload.username);
+    } catch (tokenVerErr) {
+      console.log("unauthorised");
+      ws.close(4001, "Unauthorized"); // Close connection with an error code and reason
+      return;
+    }
+
     const clientInfo: ClientInfo = { socket: ws, username };
 
-    const clientInfoString = JSON.stringify(clientInfo);
-    console.log(clientInfoString);
-
     clients.set(username, clientInfo);
-
-    // task: validate token
-    // if (!token || !validateToken(token)) {
-    //     ws.close(4001, "Unauthorized"); // Close connection with an error code and reason
-    //     return;
-    //   }
-
-    // Save the client information,
-    //  clients.set(userId, { socket: ws, userId, username });
 
     console.log("New client connected");
 

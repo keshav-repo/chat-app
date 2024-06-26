@@ -4,6 +4,7 @@ import { User } from "../model/user";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { customJwtPayload } from "../model/customJwtPayload";
 
 class UserController {
   private secretKey: string;
@@ -26,7 +27,10 @@ class UserController {
     try {
       const match = await bcrypt.compare(password, user.password);
       if (match) {
-        const token = jwt.sign({ username: user.username }, this.secretKey, {
+        const payload: customJwtPayload = {
+          username: user.username,
+        };
+        const token = jwt.sign(payload, this.secretKey, {
           expiresIn: "1h",
         });
         const refreshToken = jwt.sign(
@@ -47,8 +51,6 @@ class UserController {
   public addUser = async (req: Request, res: Response): Promise<void> => {
     try {
       const user = await userRepository.findByUsername(req.body.username);
-      console.log("user is");
-      console.log(user);
 
       if (user != null) {
         res.status(400).json({ message: "user already present" });
