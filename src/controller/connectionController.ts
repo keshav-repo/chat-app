@@ -4,6 +4,7 @@ import url from "url";
 import { customJwtPayload } from "../model/customJwtPayload";
 import { verifyToken } from "../helper/jwtHelper";
 import { connectionManagerService } from "../service";
+import { ChatMessage } from "../model/chatMessage";
 
 class ConnectionController {
   private secretKey: string;
@@ -23,6 +24,30 @@ class ConnectionController {
       console.log("unauthorised");
       ws.close(4001, "Unauthorized"); // Close connection with an error code and reason
       return;
+    }
+  };
+
+  public handleMessage = (
+    ws: WebSocket,
+    message: WebSocket.RawData,
+    isBinary: boolean
+  ) => {
+    const messageString: string = message.toString();
+    try {
+      const chatMessage: ChatMessage = JSON.parse(messageString);
+
+      // Handle the parsed JSON message
+      console.log("Received message:", chatMessage);
+
+      const toConnection: WebSocket | null =
+        connectionManagerService.getConnection(chatMessage.to);
+      if (toConnection != null) {
+        toConnection.send(JSON.stringify(chatMessage));
+      }
+      ws.send(JSON.stringify(chatMessage));
+    } catch (err) {
+      console.error("error on mesage event");
+      console.log(err);
     }
   };
 }

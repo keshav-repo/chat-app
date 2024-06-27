@@ -1,16 +1,9 @@
 import { IncomingMessage } from "http";
 import WebSocket from "ws";
 import url from "url";
-import { customJwtPayload } from "./model/customJwtPayload";
-import { verifyToken } from "./helper/jwtHelper";
+// import { customJwtPayload } from "./model/customJwtPayload";
+// import { verifyToken } from "./helper/jwtHelper";
 import { connectionController } from "./controller";
-
-interface ClientInfo {
-  socket: WebSocket;
-  username: string;
-}
-
-const clients: Map<string, ClientInfo> = new Map();
 
 const initializeWebSocketServer = (port: number) => {
   const wss: WebSocket.Server = new WebSocket.Server({ port });
@@ -18,9 +11,8 @@ const initializeWebSocketServer = (port: number) => {
   wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
     connectionController.handleConnection(ws, req);
 
-    ws.on("message", (message: string) => {
-      console.log(`Received message: ${message}`);
-      ws.send(`Server received your message: ${message}`);
+    ws.on("message", (message: WebSocket.RawData, isBinary: boolean) => {
+      connectionController.handleMessage(ws, message, isBinary);
     });
 
     ws.on("close", () => {

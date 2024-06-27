@@ -16,19 +16,15 @@ class ConnectionManagerService {
     this.clients.delete(username);
     console.log(`Client ${username} removed`);
   };
+
+  public getConnection = (username: string): WebSocket | null => {
+    const clientInfo: ClientInfo | undefined = this.clients.get(username);
+    if (clientInfo != undefined) {
+      return clientInfo.socket;
+    } else {
+      return null;
+    }
+  };
 }
 
 export default ConnectionManagerService;
-
-// const clients: Map<string, ClientInfo> = new Map();
-
-// export const handleClientConnection = (ws: WebSocket, username: string) => {
-//   const clientInfo: ClientInfo = { socket: ws, username };
-//   clients.set(username, clientInfo);
-//   console.log(`New client connected: ${username}`);
-// };
-
-// export const removeClient = (username: string) => {
-//   clients.delete(username);
-//   console.log(`Client ${username} removed`);
-// };
