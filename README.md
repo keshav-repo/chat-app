@@ -20,6 +20,7 @@ cqlsh
 
 CREATE KEYSPACE IF NOT EXISTS chat WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };
 
+use chat;
 
 CREATE TABLE users (
   userId UUID PRIMARY KEY,

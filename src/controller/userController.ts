@@ -3,8 +3,8 @@ import { userRepository } from "../repo";
 import { User } from "../model/user";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { customJwtPayload } from "../model/customJwtPayload";
+import { generateToken, generateRefreshToken } from "../helper/jwtHelper";
 
 class UserController {
   private secretKey: string;
@@ -30,13 +30,11 @@ class UserController {
         const payload: customJwtPayload = {
           username: user.username,
         };
-        const token = jwt.sign(payload, this.secretKey, {
-          expiresIn: "1h",
-        });
-        const refreshToken = jwt.sign(
-          { username: user.username },
+        const token = generateToken(payload, this.secretKey, "1h");
+        const refreshToken = generateRefreshToken(
+          payload,
           this.secretKey,
-          { expiresIn: "7d" }
+          "7d"
         );
         res.json({ token, refreshToken, message: "Login successful" });
       } else {
