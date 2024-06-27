@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import { userRepository } from "../repo";
 import { User } from "../model/user";
 import { v4 as uuidv4 } from "uuid";
-import bcrypt from "bcryptjs";
 import { customJwtPayload } from "../model/customJwtPayload";
 import { generateToken, generateRefreshToken } from "../helper/jwtHelper";
+import { getHash, compareHash } from "../helper/encryption";
 
 class UserController {
   private secretKey: string;
@@ -25,7 +25,7 @@ class UserController {
     }
 
     try {
-      const match = await bcrypt.compare(password, user.password);
+      const match = await compareHash(password, user.password);
       if (match) {
         const payload: customJwtPayload = {
           username: user.username,
@@ -62,7 +62,7 @@ class UserController {
     const user: User = {
       userId: uuidv4(),
       username: req.body.username,
-      password: await bcrypt.hash(req.body.password, 10),
+      password: await getHash(req.body.password, 10),
     };
     try {
       userRepository.save(user);

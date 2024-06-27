@@ -18,10 +18,6 @@ const initializeWebSocketServer = (port: number) => {
   wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
     connectionController.handleConnection(ws, req);
 
-    // const clientInfo: ClientInfo = { socket: ws, username };
-    // clients.set(username, clientInfo);
-    // console.log("New client connected");
-
     ws.on("message", (message: string) => {
       console.log(`Received message: ${message}`);
       ws.send(`Server received your message: ${message}`);

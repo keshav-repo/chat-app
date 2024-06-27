@@ -3,6 +3,7 @@ import WebSocket from "ws";
 import url from "url";
 import { customJwtPayload } from "../model/customJwtPayload";
 import { verifyToken } from "../helper/jwtHelper";
+import { connectionManagerService } from "../service";
 
 class ConnectionController {
   private secretKey: string;
@@ -11,15 +12,13 @@ class ConnectionController {
   }
 
   public handleConnection = (ws: WebSocket, req: IncomingMessage) => {
-    const query = url.parse(req.url || "", true).query;
-    const token = query.token as string;
-
-    let username = "";
     try {
-      const payload: customJwtPayload = verifyToken(token, this.secretKey);
+      const query = url.parse(req.url || "", true).query;
+      const token = query.token as string;
 
-      console.log("payload is");
-      console.log(payload.username);
+      const payload: customJwtPayload = verifyToken(token, this.secretKey);
+      const userName: string = payload.username;
+      connectionManagerService.handleConnection(ws, userName);
     } catch (tokenVerErr) {
       console.log("unauthorised");
       ws.close(4001, "Unauthorized"); // Close connection with an error code and reason
