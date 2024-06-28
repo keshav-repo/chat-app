@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from "uuid";
 import { customJwtPayload } from "../model/customJwtPayload";
 import { generateToken, generateRefreshToken } from "../helper/jwtHelper";
 import { getHash, compareHash } from "../helper/encryption";
+import stringUtility from "../utility/stringUtility";
+import objectUtility from "../utility/objectUtility";
 
 class UserController {
   private secretKey: string;
@@ -70,6 +72,27 @@ class UserController {
     } catch (err) {
       console.log("error in saving user");
       res.status(500).json({ message: "Internal error" });
+    }
+  };
+
+  public checkUser = async (req: Request, res: Response): Promise<void> => {
+    // check if a user exist
+    const toUser: string | undefined = req.query.toUser as string;
+    if (stringUtility.isStringEmpty(toUser)) {
+      res.status(400).json({
+        message: "Missing query parameter: toUser",
+      });
+      return;
+    }
+    const user: User | null = await userRepository.findByUsername(toUser);
+    if (objectUtility.isObjectEmpty(user)) {
+      res.status(404).json({
+        message: "User not found",
+      });
+    } else {
+      res.status(200).json({
+        message: "User found",
+      });
     }
   };
 }
