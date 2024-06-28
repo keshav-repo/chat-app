@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import 'tailwindcss/tailwind.css';
 
 const Chat = () => {
     const [message, setMessage] = useState('');
@@ -7,6 +6,7 @@ const Chat = () => {
     const [socket, setSocket] = useState(null);
     const [otherUsername, setOtherUsername] = useState('');
     const [username, setUsername] = useState('');
+    const [userExists, setUserExists] = useState(false); // State to track if user exists
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -49,17 +49,51 @@ const Chat = () => {
         }
     };
 
+    const handleKeyPress = async (event) => {
+        if (event.key === 'Enter' && otherUsername.trim() !== '') {
+            try {
+                const response = await fetch(`/api/user/check-user?toUser=${otherUsername}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                if (response.ok) {
+                    setUserExists(true);
+                    console.log('User exists');
+                } else if (response.status === 404) {
+                    setUserExists(false);
+                    console.log('User does not exist');
+                } else {
+                    console.error('Error checking user:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error checking user:', error);
+            }
+        }
+    };
+
     return (
         <div className="chat container mx-auto p-4">
-            <h2 className="text-2xl font-bold mb-4">Chat Room</h2>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">Chat Room</h2>
+                <div className="text-sm">Logged in as: {username}</div>
+            </div>
+            {/* <h2 className="text-2xl font-bold mb-4">Chat Room</h2> */}
             <div className="mb-4">
                 <input
                     type="text"
                     value={otherUsername}
                     onChange={(e) => setOtherUsername(e.target.value)}
+                    onKeyDown={handleKeyPress} // Call function on key press
                     placeholder="Enter recipient username"
-                    className="border rounded p-2 mr-2 w-full sm:w-auto"
+                    className={`border rounded p-2 mr-2 w-full sm:w-auto ${userExists ? 'border-green-500' : 'border-red-500'}`} // Change border color based on user existence
                 />
+                {!userExists && (
+                    <div className="text-red-500 text-sm">User does not exist</div>
+                )}
             </div>
             <div id="chat" className="bg-gray-100 p-4 mb-4 h-64 overflow-y-scroll">
                 {messages
@@ -69,9 +103,21 @@ const Chat = () => {
                     })
                     .map((msg, index) => {
                         const { from, to, message } = JSON.parse(msg);
+
+                        // Determine if the message is sent by the current user
+                        const isCurrentUser = from === username;
+
                         return (
-                            <div key={index} className="mb-2">
-                                <strong className="text-blue-500">{from}</strong> to <strong className="text-red-500">{to}:</strong> {message}
+                            <div
+                                key={index}
+                                className={`mb-2 ${isCurrentUser ? 'flex justify-end' : 'flex justify-start'}`}
+                            >
+                                <div
+                                    className={`max-w-xs rounded-lg p-2 ${isCurrentUser ? 'bg-blue-500 text-white' : 'bg-gray-300'}`}
+                                >
+                                    {/* <strong>{isCurrentUser ? 'You' : from}</strong>: {message} */}
+                                    {message}
+                                </div>
                             </div>
                         );
                     })}
