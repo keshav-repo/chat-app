@@ -1,7 +1,6 @@
 import { UserRepository } from "../UserRepo";
 import { User } from "../../model/user";
 import { Client, mapping, types as cassandraTypes } from "cassandra-driver";
-import bcrypt from "bcryptjs";
 
 // Define custom mapping for UUID type (if needed)
 

@@ -5,6 +5,7 @@ import { customJwtPayload } from "../model/customJwtPayload";
 import { verifyToken } from "../helper/jwtHelper";
 import { connectionManagerService } from "../service";
 import { ChatMessage } from "../model/chatMessage";
+import { messageHandler } from "../service";
 
 class ConnectionController {
   private secretKey: string;
@@ -38,6 +39,13 @@ class ConnectionController {
 
       // Handle the parsed JSON message
       console.log("Received message:", chatMessage);
+
+      try {
+        messageHandler.saveMessage(chatMessage);
+      } catch (err) {
+        console.error("error saving message", err);
+        throw new Error("error saving message");
+      }
 
       const toConnection: WebSocket | null =
         connectionManagerService.getConnection(chatMessage.to);
