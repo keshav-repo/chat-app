@@ -8,8 +8,43 @@ class ChatMessageRepositoryImpl implements ChatMessageRepository {
     this.client = client;
   }
 
+  async fetchMessage(
+    sender_username: string,
+    recipient_username: string,
+    batchSize: Number,
+    lastMessageId?: string
+  ): Promise<ChatMessage[]> {
+    const query = ` SELECT * FROM chat_messages
+                    WHERE sender_username = ? AND recipient_username = ? AND message_id < ? limit ?`;
+
+    const params = [
+      sender_username,
+      recipient_username,
+      lastMessageId ?? null,
+      batchSize,
+    ];
+
+    try {
+      const result = await this.client.execute(query, params, {
+        prepare: true,
+      });
+
+      const messages: ChatMessage[] = result.rows.map((row) => ({
+        from: row.sender_username,
+        to: row.recipient_username,
+        message: row.message,
+        sent_at: row.sent_at,
+        message_id: row.message_id,
+      }));
+
+      return messages;
+    } catch (err) {
+      console.log(err);
+      throw new Error("error querying casandra for older message");
+    }
+  }
+
   async save(chatMessage: ChatMessage): Promise<void> {
-    //  sender_username | recipient_username | message_id | message | sent_at
     const query = `
       INSERT INTO chat_messages (sender_username, recipient_username, message_id, message, sent_at )
       VALUES (?, ?, ?, ?, ?)

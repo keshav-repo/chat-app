@@ -1,8 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import { verifyToken } from "../helper/jwtHelper";
+import { customJwtPayload } from "../model/customJwtPayload";
 
 dotenv.config();
+
+interface UserDetails {
+  username: string;
+}
 
 class JWTMiddleware {
   private secretKey: string;
@@ -23,7 +28,11 @@ class JWTMiddleware {
       const token = authHeader.split(" ")[1];
 
       try {
-        verifyToken(token, this.secretKey);
+        const payload: customJwtPayload = verifyToken(token, this.secretKey);
+        (req as any).user = {
+          username: payload.username,
+        };
+
         next();
       } catch (err) {
         res.sendStatus(403);

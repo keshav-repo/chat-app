@@ -1,8 +1,5 @@
 import { IncomingMessage } from "http";
 import WebSocket from "ws";
-import url from "url";
-// import { customJwtPayload } from "./model/customJwtPayload";
-// import { verifyToken } from "./helper/jwtHelper";
 import { connectionController } from "./controller";
 
 const initializeWebSocketServer = (port: number) => {
