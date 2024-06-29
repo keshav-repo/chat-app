@@ -8,5 +8,6 @@ export interface MessageRequest extends Request {
     otherUsername?: string;
     batchSize?: string;
     lastMessageId?: string;
+    pageNumber?: string;
   };
 }

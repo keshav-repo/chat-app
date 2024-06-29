@@ -11,8 +11,9 @@ class ChatMessageRepositoryImpl implements ChatMessageRepository {
   async fetchMessage(
     sender_username: string,
     recipient_username: string,
-    batchSize: Number,
-    lastMessageId?: string
+    batchSize: number,
+    lastMessageId?: string,
+    pageNumber?: number
   ): Promise<ChatMessage[]> {
     const query = ` SELECT * FROM chat_messages
                     WHERE sender_username = ? AND recipient_username = ? AND message_id < ?  limit ?`;

@@ -5,7 +5,8 @@ export interface ChatMessageRepository {
   fetchMessage(
     sender_username: string,
     recipient_username: string,
-    batchSizeCount?: Number,
-    lastMessageId?: string
+    batchSizeCount?: number,
+    lastMessageId?: string,
+    pageNumber?: number
   ): Promise<ChatMessage[]>;
 }

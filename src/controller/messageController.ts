@@ -12,7 +12,7 @@ class MessageController {
     req: MessageRequest,
     res: Response
   ): Promise<void> => {
-    const { otherUsername, batchSize, lastMessageId } = req.query;
+    const { otherUsername, batchSize, lastMessageId, pageNumber } = req.query;
 
     const username: string | undefined = req.user?.username;
     if (!username || !otherUsername) {
@@ -22,38 +22,42 @@ class MessageController {
       return;
     }
 
-    const batchSizeCount: number = parseInt(batchSize ?? "10") / 2;
+    const batchSizeCount: number = parseInt(batchSize ?? "10");
+    const pageNo: number | undefined = pageNumber
+      ? parseInt(pageNumber)
+      : undefined;
     const messages: ChatMessage[] = await chatMessageRepo.fetchMessage(
       username,
       otherUsername,
       batchSizeCount,
-      lastMessageId
+      lastMessageId,
+      pageNo
     );
-    const message2: ChatMessage[] = await chatMessageRepo.fetchMessage(
-      otherUsername,
-      username,
-      batchSizeCount,
-      lastMessageId
-    );
+    // const message2: ChatMessage[] = await chatMessageRepo.fetchMessage(
+    //   otherUsername,
+    //   username,
+    //   batchSizeCount,
+    //   lastMessageId
+    // );
 
-    const combinedMessages: ChatMessage[] = [...messages, ...message2].sort(
-      (a: ChatMessage, b: ChatMessage): number => {
-        if (a.message_id && b.message_id) {
-          const messageId1: cassandraTypes.TimeUuid = a.message_id;
-          const messageId2: cassandraTypes.TimeUuid = b.message_id;
-          if (messageId1.getDate().getTime() > messageId2.getDate().getTime())
-            return 1;
-          else if (
-            messageId1.getDate().getTime() < messageId2.getDate().getTime()
-          )
-            return -1;
-          else return 0;
-        } else {
-          return 0;
-        }
-      }
-    );
-    res.json(combinedMessages);
+    // const combinedMessages: ChatMessage[] = [...messages, ...message2].sort(
+    //   (a: ChatMessage, b: ChatMessage): number => {
+    //     if (a.message_id && b.message_id) {
+    //       const messageId1: cassandraTypes.TimeUuid = a.message_id;
+    //       const messageId2: cassandraTypes.TimeUuid = b.message_id;
+    //       if (messageId1.getDate().getTime() > messageId2.getDate().getTime())
+    //         return 1;
+    //       else if (
+    //         messageId1.getDate().getTime() < messageId2.getDate().getTime()
+    //       )
+    //         return -1;
+    //       else return 0;
+    //     } else {
+    //       return 0;
+    //     }
+    //   }
+    // );
+    res.json(messages);
   };
 }
 export default MessageController;

@@ -79,7 +79,7 @@ const Chat = () => {
     useEffect(() => {
         const fetchOldMessages = async () => {
             try {
-                const response = await fetch(`/api/message?otherUsername=${otherUsername}&batchSize=10`, {
+                const response = await fetch(`/api/message?otherUsername=${otherUsername}&batchSize=10&pageNumber=1`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,

@@ -5,5 +5,5 @@ export interface ChatMessage {
   to: string;
   message: string;
   sent_at?: Date;
-  message_id?: types.TimeUuid;
+  message_id?: string;
 }
