@@ -55,3 +55,15 @@ CREATE TABLE IF NOT EXISTS conversation_participants (
 )WITH CLUSTERING ORDER BY (conversation_id DESC);
 
 ```
+
+### Mongodb
+
+```
+# run mongodb using docker
+docker run --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest
+
+# enter the mongodb container
+docker exec -it mongodb /bin/bash
+
+
+```

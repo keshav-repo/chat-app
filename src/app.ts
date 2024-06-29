@@ -3,10 +3,15 @@ import dotenv from "dotenv";
 
 import routes from "./routes";
 import { connectDb } from "./db";
+import { connectMongoDB } from "./config/mongoDb";
 
 dotenv.config();
 
-connectDb();
+// to connect casandra db
+// connectDb();
+
+// to connect mongodb
+// connectMongoDB();
 
 const app: Express = express();
 const port = process.env.PORT || 8080;
