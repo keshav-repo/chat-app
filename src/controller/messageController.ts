@@ -41,7 +41,13 @@ class MessageController {
         if (a.message_id && b.message_id) {
           const messageId1: cassandraTypes.TimeUuid = a.message_id;
           const messageId2: cassandraTypes.TimeUuid = b.message_id;
-          return messageId1.getDate() > messageId2.getDate() ? 1 : 0;
+          if (messageId1.getDate().getTime() > messageId2.getDate().getTime())
+            return 1;
+          else if (
+            messageId1.getDate().getTime() < messageId2.getDate().getTime()
+          )
+            return -1;
+          else return 0;
         } else {
           return 0;
         }

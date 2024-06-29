@@ -40,4 +40,18 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 ) WITH CLUSTERING ORDER BY (message_id DESC);
 
 
+CREATE TABLE IF NOT EXISTS chat_messages (
+   conversation_id uuid,
+   sender_username text,
+   message_id timeuuid,
+   message text,
+   sent_at timestamp,
+   PRIMARY KEY ((sender_username, recipient_username), message_id)
+) WITH CLUSTERING ORDER BY (message_id DESC);
+
+CREATE TABLE IF NOT EXISTS conversation_participants (
+     conversation_id uuid,
+     user_id text,
+)WITH CLUSTERING ORDER BY (conversation_id DESC);
+
 ```

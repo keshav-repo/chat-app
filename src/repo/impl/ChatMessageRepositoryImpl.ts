@@ -15,7 +15,7 @@ class ChatMessageRepositoryImpl implements ChatMessageRepository {
     lastMessageId?: string
   ): Promise<ChatMessage[]> {
     const query = ` SELECT * FROM chat_messages
-                    WHERE sender_username = ? AND recipient_username = ? AND message_id < ? limit ?`;
+                    WHERE sender_username = ? AND recipient_username = ? AND message_id < ?  limit ?`;
 
     const params = [
       sender_username,

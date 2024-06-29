@@ -22,7 +22,8 @@ const Chat = () => {
             });
 
             ws.addEventListener('message', (event) => {
-                setMessages(prevMessages => [...prevMessages, event.data]);
+                const newMessage = JSON.parse(event.data);
+                setMessages(prevMessages => [...prevMessages, newMessage]);
             });
 
             ws.addEventListener('close', () => {
@@ -75,13 +76,40 @@ const Chat = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchOldMessages = async () => {
+            try {
+                const response = await fetch(`/api/message?otherUsername=${otherUsername}&batchSize=10`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                if (response.ok) {
+                    const fetchedMessages = await response.json();
+                    setMessages(prevMessages => [...prevMessages, ...fetchedMessages]);
+                } else {
+                    console.error('Failed to fetch old messages:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching old messages:', error);
+            }
+        };
+
+        // Fetch old messages only if otherUsername is defined
+        if (otherUsername) {
+            fetchOldMessages();
+        }
+    }, [otherUsername]); // Run this effect when otherUsername changes
+
     return (
         <div className="chat container mx-auto p-4">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">Chat Room</h2>
                 <div className="text-sm">Logged in as: {username}</div>
             </div>
-            {/* <h2 className="text-2xl font-bold mb-4">Chat Room</h2> */}
             <div className="mb-4">
                 <input
                     type="text"
@@ -96,31 +124,20 @@ const Chat = () => {
                 )}
             </div>
             <div id="chat" className="bg-gray-100 p-4 mb-4 h-64 overflow-y-scroll">
-                {messages
-                    .filter((msg) => {
-                        const { message } = JSON.parse(msg);
-                        return message.trim() !== '';
-                    })
-                    .map((msg, index) => {
-                        const { from, to, message } = JSON.parse(msg);
-
-                        // Determine if the message is sent by the current user
-                        const isCurrentUser = from === username;
-
-                        return (
+                {messages.map((msg, index) => {
+                    return (
+                        <div
+                            key={index}
+                            className={`mb-2 ${msg.from === username ? 'flex justify-end' : 'flex justify-start'}`}
+                        >
                             <div
-                                key={index}
-                                className={`mb-2 ${isCurrentUser ? 'flex justify-end' : 'flex justify-start'}`}
+                                className={`max-w-xs rounded-lg p-2 ${msg.from === username ? 'bg-blue-500 text-white' : 'bg-gray-300'}`}
                             >
-                                <div
-                                    className={`max-w-xs rounded-lg p-2 ${isCurrentUser ? 'bg-blue-500 text-white' : 'bg-gray-300'}`}
-                                >
-                                    {/* <strong>{isCurrentUser ? 'You' : from}</strong>: {message} */}
-                                    {message}
-                                </div>
+                                {msg.message}
                             </div>
-                        );
-                    })}
+                        </div>
+                    );
+                })}
             </div>
             <div className="flex">
                 <input
