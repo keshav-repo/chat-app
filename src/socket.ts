@@ -1,9 +1,9 @@
-import { IncomingMessage } from "http";
+import { IncomingMessage, Server } from "http";
 import WebSocket from "ws";
 import { connectionController } from "./controller";
 
-const initializeWebSocketServer = (port: number) => {
-  const wss: WebSocket.Server = new WebSocket.Server({ port });
+const initializeWebSocketServer = (server: Server) => {
+  const wss: WebSocket.Server = new WebSocket.Server({ server });
 
   wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
     connectionController.handleConnection(ws, req);
@@ -17,7 +17,7 @@ const initializeWebSocketServer = (port: number) => {
     });
   });
 
-  console.log(`WebSocket server is running on ws://localhost:${port}`);
+  console.log(`WebSocket server is running`);
 };
 
 export default initializeWebSocketServer;

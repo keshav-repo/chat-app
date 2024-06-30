@@ -11,7 +11,7 @@ const Chat = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            const ws = new WebSocket(`ws://localhost:8000?token=${token}`);
+            const ws = new WebSocket(`/ws?token=${token}`);
             ws.addEventListener('open', () => {
                 console.log('Connected to the WebSocket server.');
                 setSocket(ws);
