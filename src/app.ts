@@ -2,8 +2,8 @@ import express, { Express, Request, Response, Router } from "express";
 import dotenv from "dotenv";
 
 import routes from "./routes";
-import { connectDb } from "./db";
-import { connectMongoDB } from "./config/mongoDb";
+//import { connectDb } from "./db";
+import { connectDb } from "./repo";
 
 dotenv.config();
 
@@ -11,7 +11,7 @@ dotenv.config();
 // connectDb();
 
 // to connect mongodb
-// connectMongoDB();
+connectDb();
 
 const app: Express = express();
 const port = process.env.PORT || 8080;

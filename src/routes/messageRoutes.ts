@@ -8,9 +8,7 @@ const messageRoutes: Router = Router();
 messageRoutes.get(
   "",
   jWTMiddleware.authenticateJWT,
-  (req: MessageRequest, res: Response) => {
-    messageController.fetchMessage(req, res);
-  }
+  messageController.fetchMessage
 );
 
 export default messageRoutes;

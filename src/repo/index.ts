@@ -15,13 +15,11 @@ import ChatMessageMongoRepositoryImpl from "./impl/ChatMessageMongoRepositoryImp
 
 let userRepository: UserRepository, chatMessageRepo: ChatMessageRepository;
 
-async function main() {
+const connectDb = async function () {
   // connect to db
   await connectMongoDB();
   (userRepository = new UserRepositoryMongoImpl(getDb())),
     (chatMessageRepo = new ChatMessageMongoRepositoryImpl(getDb()));
-}
+};
 
-main();
-
-export { userRepository, chatMessageRepo };
+export { connectDb, userRepository, chatMessageRepo };

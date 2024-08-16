@@ -11,7 +11,12 @@ const Chat = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            const ws = new WebSocket(`/ws?token=${token}`);
+            // Dynamically derive the WebSocket URL based on the current location
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = 'localhost:8080';
+            const wsUrl = `${protocol}//${host}?token=${token}`;
+
+            const ws = new WebSocket(wsUrl);
             ws.addEventListener('open', () => {
                 console.log('Connected to the WebSocket server.');
                 setSocket(ws);
@@ -31,9 +36,17 @@ const Chat = () => {
                 // Optional: handle reconnection logic
             });
 
+            ws.addEventListener('error', (error) => {
+                console.error('WebSocket error:', error);
+                // Close the socket to trigger the close event and reconnect
+                ws.close();
+            });
+
             // Clean up function to close WebSocket connection when component unmounts
             return () => {
-                ws.close();
+                if (socket) {
+                    ws.close();
+                }
             };
         }
     }, []); // Only run once on component mount
